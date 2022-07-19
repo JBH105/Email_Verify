@@ -1,0 +1,23 @@
+{
+  "name": "email-_verify",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "body-parser": "^1.20.0",
+    "config": "^3.3.7",
+    "cors": "^2.8.5",
+    "ejs": "^3.1.8",
+    "express": "^4.18.1",
+    "mongoose": "^6.4.5",
+    "nodemailer": "^6.7.7",
+    "nodemon": "^2.0.19",
+    "part": "^0.1.1",
+    "pug": "^3.0.2"
+  }
+}
