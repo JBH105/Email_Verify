@@ -9,7 +9,7 @@ const user = require("./routes/api/User");
 const event = require("./routes/api/Event");
 
 
-const PORT = 8080;
+const PORT = process.env.PORT || 8080;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors({ origin: true, credentials: true }));
