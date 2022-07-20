@@ -6,6 +6,8 @@ const cors = require("cors");
 var path = require("path");
 
 const user = require("./routes/api/User");
+const event = require("./routes/api/Event");
+
 
 const PORT = 8080;
 
@@ -19,6 +21,7 @@ app.get("/", async (req, res) => {
 });
 
 app.use("/api", user);
+app.use("/api/event", event)
 
 app.listen(PORT, () => {
   connectDB();
