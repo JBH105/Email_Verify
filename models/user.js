@@ -18,6 +18,7 @@ const User = mongoose.model(
     },
     isVerifed: {
       type: Boolean,
+      default:false
     },
   })
 );
