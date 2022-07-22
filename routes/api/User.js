@@ -27,11 +27,11 @@ router.post("/createUser", async (req, res) => {
       html: data
     }
     //User
-    const userEmail = await User.find({ Email: req.body.Email })
-    if (userEmail.length > 0) {
-      res.send({ message: "user is existed in oracle", status: 201 });
-      return
-    }
+    // const userEmail = await User.find({ Email: req.body.Email })
+    // if (userEmail.length > 0) {
+    //   res.send({ message: "user is existed in oracle", status: 201 });
+    //   return
+    // }
     //Email
     transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
@@ -45,6 +45,7 @@ router.post("/createUser", async (req, res) => {
       Password: bcrypt.hashSync(req.body.Password, 10)
     });
     await UserCreate.save()
+    console.log(UserCreate);
     //OTP
     const userotp = new UserOtp({
       userId: UserCreate._id,
