@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const User = require("../../models/user");
+const User = require("../../models/user.model");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const config = require("../../config/auth.config");
@@ -28,7 +28,7 @@ router.post("/login", async (req, res) => {
                 expiresIn: config.jwtExpiration
             });
             user.token = token;
-            res.status(200).json({ 'token': token, user });
+            res.status(200).json({ 'token': token, message:"Login successfully " });
         } else {
             res.send("Invalid Credentials");
         }
