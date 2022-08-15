@@ -9,8 +9,6 @@ const verifyToken = require("../../middleware/authJwt");
 
 router.get("/data", verifyToken, async (req, res) => {
     try {
-
-        console.log(req.user);
         const newEvent = await Event.find()
         res.status(200).json({ Data: newEvent, status: true })
     } catch (error) {
