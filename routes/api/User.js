@@ -1,12 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const User = require("../../models/user");
+const User = require("../../models/user.model");
 const UserOtp = require("../../models/Otp")
 const nodemailer = require("nodemailer");
 const ejs = require('ejs');
 const path = require('path')
 const bcrypt = require('bcrypt')
-
 
 
 var transporter = nodemailer.createTransport({
@@ -16,7 +15,7 @@ var transporter = nodemailer.createTransport({
     pass: "yrfjthzxtqqocqyn",
   },
 });
-router.post("/createUser", async (req, res) => {
+router.post("/createuser", async (req, res) => {
   try {
     const OTP = Math.floor(1000 + Math.random() * 9000);
     const data = await ejs.renderFile(path.join(__dirname, "../../views/EmailTemplate.ejs"), { url: "http://localhost:5000", name: req.body.UserName, otp: OTP })
@@ -32,15 +31,12 @@ router.post("/createUser", async (req, res) => {
       res.send({ message: "user is existed in oracle", status: 201 });
       return
     }
-    //Email
-    transporter.sendMail(mailOptions, function (error, info) {
-      if (error) {
-        res.send({ error: error, status: false });
-      }
-    });
+   
     //create user
     const UserCreate = await new User({
       UserName: req.body.UserName,
+      Cname: req.body.Cname,
+      PhoneNo: req.body.PhoneNo,
       Email: req.body.Email,
       Password: bcrypt.hashSync(req.body.Password, 10)
     });
@@ -50,6 +46,12 @@ router.post("/createUser", async (req, res) => {
       userId: UserCreate._id,
       otp: OTP
     })
+     //Email
+     transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        res.send({ error: error, status: false });
+      }
+    });
     userotp.save().then((result) => {
       res.status(200).send({ UserId: result.userId, message: "Successfully send otp", status: true })
     })

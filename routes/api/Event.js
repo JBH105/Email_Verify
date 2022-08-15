@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Event = require("../../models/Event");
 
-router.get("/data", async (req, res) => {
+router.get("/", async (req, res) => {
     try {
         const newEvent = await Event.find()
         res.status(200).json({ Data: newEvent, status: true })
