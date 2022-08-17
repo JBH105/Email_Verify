@@ -28,7 +28,7 @@ router.post("/createuser", async (req, res) => {
     //User
     const userEmail = await User.find({ Email: req.body.Email })
     if (userEmail.length > 0) {
-      res.send({ message: "user is existed in oracle", status: 201 });
+      res.send({ message: "Username already exists", status: 201 });
       return
     }
    
