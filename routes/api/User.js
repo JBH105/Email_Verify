@@ -1,39 +1,46 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../../models/user");
-const UserOtp = require("../../models/Otp")
+const UserOtp = require("../../models/Otp");
 const nodemailer = require("nodemailer");
-const ejs = require('ejs');
-const path = require('path')
-const bcrypt = require('bcrypt')
+const ejs = require("ejs");
+const path = require("path");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const config = require("../../config/auth.config");
 
+const { EmailAuth } = require("../../controllers/email.controllers");
 
-
-var transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: "jbh.globaliasoft@gmail.com",
-    pass: "yrfjthzxtqqocqyn",
-  },
+router.get("/getuser", (req, res) => {
+  try {
+  } catch (error) {}
 });
+
 router.post("/createUser", async (req, res) => {
   try {
     const OTP = Math.floor(1000 + Math.random() * 9000);
-    const data = await ejs.renderFile(path.join(__dirname, "../../views/EmailTemplate.ejs"), { url: "http://localhost:5000", name: req.body.UserName, otp: OTP })
+    const data = await ejs.renderFile(
+      path.join(__dirname, "../../views/EmailTemplate.ejs"),
+      { url: "http://localhost:5000", name: req.body.UserName, otp: OTP }
+    );
     const mailOptions = {
       from: "jbh.globaliasoft@gmail.com",
       to: req.body.Email,
       subject: "Email Verified",
-      html: data
+      html: data,
+    };
+    // User
+    const userEmail = await User.find({ Email: req.body.Email });
+    if (userEmail.length > 0) {
+      res.send({
+        message: "user is existed in oracle",
+        userId: userEmail[0]._id,
+        status: 201,
+      });
+      return;
     }
-    //User
-    // const userEmail = await User.find({ Email: req.body.Email })
-    // if (userEmail.length > 0) {
-    //   res.send({ message: "user is existed in oracle", status: 201 });
-    //   return
-    // }
-    //Email
-    transporter.sendMail(mailOptions, function (error, info) {
+    // Email
+    EmailAuth.sendMail(mailOptions, function (error, info) {
       if (error) {
         res.send({ error: error, status: false });
       }
@@ -42,19 +49,22 @@ router.post("/createUser", async (req, res) => {
     const UserCreate = await new User({
       UserName: req.body.UserName,
       Email: req.body.Email,
-      Password: bcrypt.hashSync(req.body.Password, 10)
+      Password: bcrypt.hashSync(req.body.Password, 10),
     });
-    await UserCreate.save()
+    UserCreate.save();
     console.log(UserCreate);
     //OTP
     const userotp = new UserOtp({
       userId: UserCreate._id,
-      otp: OTP
-    })
+      otp: OTP,
+    });
     userotp.save().then((result) => {
-      res.status(200).send({ UserId: result.userId, message: "Successfully send otp", status: true })
-    })
-
+      res.status(200).send({
+        UserId: result.userId,
+        message: "Successfully send otp",
+        status: true,
+      });
+    });
   } catch (err) {
     res.json({ result: 0, message: err });
   }
@@ -63,23 +73,25 @@ router.post("/createUser", async (req, res) => {
 //user verified
 
 router.post("/verify/:id", async (req, res) => {
-
   const userVerify = await User.findOne({ _id: req.params.id });
   if (!userVerify) {
-    return res.send({ message: "Please create user" })
+    return res.send({ message: "Please create user" });
   }
   let otpNumber = await UserOtp.findOne({ userId: userVerify._id.toString() });
   if (!otpNumber) {
-    return res.status(402).send({ message: "OTP is not existed" })
+    return res.status(402).send({ message: "OTP is not existed" });
   }
   if (req.body.Otp === otpNumber.otp) {
-    const data = await ejs.renderFile(path.join(__dirname, "../../views/EmailVerify.ejs"), { name: userVerify?.UserName })
+    const data = await ejs.renderFile(
+      path.join(__dirname, "../../views/EmailVerify.ejs"),
+      { name: userVerify?.UserName }
+    );
     const mailOptions = {
       from: "jbh.globaliasoft@gmail.com",
       to: userVerify?.Email,
       subject: "Congratulations!!",
-      html: data
-    }
+      html: data,
+    };
     transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
         res.send({ error: error, status: false });
@@ -88,10 +100,29 @@ router.post("/verify/:id", async (req, res) => {
     await User.findOneAndUpdate({ _id: req.params.id }, { isVerifed: true });
     let otpNumber = await UserOtp.findOneAndRemove({ userId: userVerify._id });
 
-    res.status(200).send({ message: "User verification is successful", status: true });
+    res
+      .status(200)
+      .send({ message: "User verification is successful", status: true });
   } else {
     res.status(200).send({ message: "OTP is incorrect", status: false });
   }
-})
+});
+
+// User Login
+router.post("/login", async (req, res) => {
+  const { Email, Password } = req.body;
+  const user = await User.findOne({ Email });
+  if (user && (await bcrypt.compare(Password, user.Password))) {
+    const token = jwt.sign({ userId: user._id }, config.ACCESS_TOKEN_SECRET, {
+      expiresIn: config.jwtExpiration,
+    });
+    user.token = token;
+    res
+      .status(200)
+      .json({ message: "Successful login", "x-access-token": token, user });
+  } else {
+    res.send("Invalid Credentials");
+  }
+});
 
 module.exports = router;
