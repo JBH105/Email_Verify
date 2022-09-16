@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const User = require("../../models/user");
-const UserOtp = require("../../models/Otp");
+const User = require("../../models/user.model");
+const UserOtp = require("../../models/Otp")
 const nodemailer = require("nodemailer");
 const ejs = require("ejs");
 const path = require("path");
@@ -11,12 +11,14 @@ const config = require("../../config/auth.config");
 
 const { EmailAuth } = require("../../controllers/email.controllers");
 
-router.get("/getuser", (req, res) => {
-  try {
-  } catch (error) {}
+var transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: "jbh.globaliasoft@gmail.com",
+    pass: "yrfjthzxtqqocqyn",
+  },
 });
-
-router.post("/createUser", async (req, res) => {
+router.post("/createuser", async (req, res) => {
   try {
     const OTP = Math.floor(1000 + Math.random() * 9000);
     const data = await ejs.renderFile(
@@ -33,21 +35,18 @@ router.post("/createUser", async (req, res) => {
     const userEmail = await User.find({ Email: req.body.Email });
     if (userEmail.length > 0) {
       res.send({
-        message: "user is existed in oracle",
+        message: "Username already exists",
         userId: userEmail[0]._id,
         status: 201,
       });
       return;
     }
-    // Email
-    EmailAuth.sendMail(mailOptions, function (error, info) {
-      if (error) {
-        res.send({ error: error, status: false });
-      }
-    });
+   
     //create user
     const UserCreate = await new User({
       UserName: req.body.UserName,
+      Cname: req.body.Cname,
+      PhoneNo: req.body.PhoneNo,
       Email: req.body.Email,
       Password: bcrypt.hashSync(req.body.Password, 10),
     });
@@ -56,7 +55,13 @@ router.post("/createUser", async (req, res) => {
     //OTP
     const userotp = new UserOtp({
       userId: UserCreate._id,
-      otp: OTP,
+      otp: OTP
+    })
+     //Email
+     transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        res.send({ error: error, status: false });
+      }
     });
     userotp.save().then((result) => {
       res.status(200).send({

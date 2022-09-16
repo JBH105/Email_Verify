@@ -5,20 +5,27 @@ const User = mongoose.model(
   new mongoose.Schema({
     UserName: {
       type: String,
-      require: true,
+      // require: true,
     },
+    Cname: {
+      type: String
+    },
+    PhoneNo: {
+      type: String
+    }
+    ,
     Email: {
       type: String,
-      require: true,
+      // require: true,
       unique: true,
     },
     Password: {
       type: String,
-      require: true,
+      // require: true,
     },
     isVerifed: {
       type: Boolean,
-      default:false
+      default: false
     },
   })
 );
