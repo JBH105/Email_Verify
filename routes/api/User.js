@@ -36,7 +36,7 @@ router.post("/createuser", async (req, res) => {
     if (userEmail.length > 0) {
       res.send({
         message: "Username already exists",
-        userId: userEmail[0]._id,
+        UserId: userEmail[0]._id,
         status: 201,
       });
       return;
