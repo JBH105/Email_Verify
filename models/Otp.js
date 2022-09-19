@@ -4,7 +4,7 @@ const OTP = mongoose.model(
     "otp",
     new mongoose.Schema({
         otp: {
-            type: Number
+            type: String
 
         },
         userId: {
