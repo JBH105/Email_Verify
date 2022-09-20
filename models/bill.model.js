@@ -17,7 +17,7 @@ const Event = mongoose.model(
         Date: {
             type: String
         },
-        UserId: { type: mongoose.Schema.Types.ObjectId, ref: 'user' }
+        // UserId: { type: mongoose.Schema.Types.ObjectId, ref: 'user' }
     })
 );
 

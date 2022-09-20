@@ -3,7 +3,7 @@ const router = express.Router();
 const bill = require("../../models/bill.model");
 const verifyToken = require("../../middleware/authJwt");
 
-router.post("/bill", verifyToken, async (req, res) => {
+router.post("/bill", async (req, res) => {
     try {
         const billdata = req.body;
         const Bill = await new bill({
@@ -11,7 +11,7 @@ router.post("/bill", verifyToken, async (req, res) => {
             LastName: billdata.LastName,
             Product: billdata.Product,
             Date: new Date().toDateString(),
-            UserId: req.user.userId._id
+            // UserId: req.user.userId._id
         })
         await Bill.save()
         res.send({ message: "Bill create successfully ", Bill: Bill })
