@@ -124,7 +124,7 @@ router.post("/login", async (req, res) => {
     user.token = token;
     res
       .status(200)
-      .json({ message: "Successful login", "x-access-token": token, user });
+      .json({ message: "Successful login", "Token": token, user });
   } else {
     res.send("Invalid Credentials");
   }
