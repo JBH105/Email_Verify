@@ -84,7 +84,7 @@ router.post("/verify/:id", async (req, res) => {
   }
   let otpNumber = await UserOtp.findOne({ userId: userVerify._id.toString() });
   if (!otpNumber) {
-    return res.status(402).send({ message: "OTP is not existed" });
+    return res.status(200).send({ message: "OTP is not existed" });
   }
   if (req.body.Otp === otpNumber.otp) {
     const data = await ejs.renderFile(
