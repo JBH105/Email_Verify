@@ -4,62 +4,76 @@ const bill = require("../../models/bill.model");
 const verifyToken = require("../../middleware/authJwt");
 
 router.post("/bill", async (req, res) => {
-    try {
-        const billdata = req.body;
-        const Bill = await new bill({
-            FirstName: billdata.FirstName,
-            LastName: billdata.LastName,
-            Product: billdata.Product,
-            Date: new Date().toDateString(),
-            // UserId: req.user.userId._id
-        })
-        await Bill.save()
-        res.send({ message: "Bill create successfully ", Bill: Bill })
-    } catch (err) {
-        console.log(err);
-    }
-})
+  try {
+    const billdata = req.body;
+    const Bill = await new bill({
+      FirstName: billdata.FirstName,
+      Number: billdata.Number,
+      Product: billdata.Product,
+      Date: billdata.Date,
+      Amount: billdata.Amount,
+      Status:billdata.Status
+      // UserId: req.user.userId._id
+    });
+    await Bill.save();
+    res.send({ message: "Bill create successfully ", Bill: Bill });
+  } catch (err) {
+    console.log(err);
+  }
+});
 
+router.put("/update", async (req, res) => {
+  try {
+    const billID = req.body.billID;
+    const productID = req.body.productID;
+    const name = req.body.name;
+    const price = req.body.price;
+    const quantity = req.body.quantity;
 
-router.put('/update', async (req, res) => {
-    try {
+    const query = { _id: billID, "Product._id": productID };
+    const updateDocument = {
+      $set: {
+        "Product.$.name": name,
+        "Product.$.price": price,
+        "Product.$.quantity": quantity,
+      },
+    };
+    const result = await bill.findOneAndUpdate(query, updateDocument, {
+      new: true,
+      runValidators: true,
+    });
 
-        const billID = req.body.billID
-        const productID = req.body.productID
-        const name = req.body.name
-        const price = req.body.price
-        const quantity = req.body.quantity
+    res.send(result);
+  } catch (err) {
+    res.send({ message: err });
+  }
+});
 
-        const query = { _id: billID, "Product._id": productID };
-        const updateDocument = {
-            $set: { "Product.$.name": name, "Product.$.price": price, "Product.$.quantity": quantity }
-        };
-        const result = await bill.findOneAndUpdate(query, updateDocument, { new: true, runValidators: true });
+router.delete("/delete", async (req, res) => {
+  try {
+    const billID = req.body.billID;
+    const productID = req.body.productID;
 
-        res.send(result)
-    } catch (err) { res.send({ message: err }) }
-})
+    const query = { _id: billID, "Product._id": productID };
+    const result = await bill.findOneAndDelete(query);
 
-router.delete('/delete', async (req, res) => {
-    try {
+    res.send(result);
+  } catch (err) {
+    res.send({ message: err });
+  }
+});
 
-        const billID = req.body.billID
-        const productID = req.body.productID
-
-        const query = { _id: billID, "Product._id": productID };
-        const result = await bill.findOneAndDelete(query);
-
-        res.send(result)
-    } catch (err) { res.send({ message: err }) }
-})
-
-router.get('/getbill', async (req, res) => {
-    try {
-        const billData = await bill.find().populate("UserId", "-Password")
-        res.send(billData)
-    } catch (err) {
-        res.send({ message: err })
-    }
-
-})
+router.get("/getbill", async (req, res) => {
+  try {
+    const condition = {
+      active: 1,
+      removed: 0,
+    };
+    const billData = await bill.find(condition);
+    // .populate("UserId", "-Password");
+    res.send(billData);
+  } catch (err) {
+    res.send({ message: err });
+  }
+});
 module.exports = router;
