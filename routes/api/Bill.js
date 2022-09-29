@@ -90,7 +90,7 @@ router.get("/getbill", async (req, res) => {
       active: 1,
       removed: 0,
     };
-    const billData = await bill.find(condition);
+    const billData = await bill.find(condition).sort({ create_at: -1 });
     // .populate("UserId", "-Password");
     // res.send(billData);
     res.status(200).send({
