@@ -64,6 +64,10 @@ router.delete("/delete", async (req, res) => {
 });
 
 router.get("/getbill", async (req, res) => {
+  const page = parseInt(req.query.page ? req.query.page : 1);
+  const limit = 10;
+  const startIndex = (page - 1) * limit;
+  const endIndex = page * limit;
   try {
     const condition = {
       active: 1,
@@ -71,7 +75,13 @@ router.get("/getbill", async (req, res) => {
     };
     const billData = await bill.find(condition);
     // .populate("UserId", "-Password");
-    res.send(billData);
+    // res.send(billData);
+    res.status(200).send({
+      status: true,
+      data: billData.slice(startIndex, endIndex),
+      current: page,
+      total: Math.ceil(billData.length / limit),
+    });
   } catch (err) {
     res.send({ message: err });
   }
