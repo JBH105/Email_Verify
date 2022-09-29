@@ -12,7 +12,7 @@ router.post("/bill", async (req, res) => {
       Product: billdata.Product,
       Date: billdata.Date,
       Amount: billdata.Amount,
-      Status:billdata.Status
+      Status: billdata.Status,
       // UserId: req.user.userId._id
     });
     await Bill.save();
@@ -81,6 +81,9 @@ router.get("/getbill", async (req, res) => {
       data: billData.slice(startIndex, endIndex),
       current: page,
       total: Math.ceil(billData.length / limit),
+      results: billData.length,
+      startIndex: startIndex,
+      endIndex: endIndex,
     });
   } catch (err) {
     res.send({ message: err });
