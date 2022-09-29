@@ -63,7 +63,7 @@ router.delete("/delete", async (req, res) => {
   }
 });
 
-router.put("/deletebill", async (req, res) => {
+router.get("/deletebill", async (req, res) => {
   try {
     const billID = req.body.billID;
     const condition = {
