@@ -63,6 +63,23 @@ router.delete("/delete", async (req, res) => {
   }
 });
 
+router.put("/deletebill", async (req, res) => {
+  try {
+    const billID = req.body.billID;
+    const condition = {
+      active: 0,
+      removed: 1,
+    };
+    const result = await bill.findOneAndUpdate({ _id: billID }, condition, {
+      new: true,
+      runValidators: true,
+    });
+    res.send(result);
+  } catch (err) {
+    res.send({ message: err });
+  }
+});
+
 router.get("/getbill", async (req, res) => {
   const page = parseInt(req.query.page ? req.query.page : 1);
   const limit = 10;
