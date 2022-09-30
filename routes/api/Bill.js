@@ -82,9 +82,10 @@ router.post("/deletebill", async (req, res) => {
 
 router.get("/getbill", async (req, res) => {
   const page = parseInt(req.query.page ? req.query.page : 1);
-  const limit = 10;
-  const startIndex = (page - 1) * limit;
-  const endIndex = page * limit;
+  const pageLimit = parseInt(req.query.pageLimit ? req.query.pageLimit : 10);
+  // const limit = 10;
+  const startIndex = (page - 1) * pageLimit;
+  const endIndex = page * pageLimit;
   try {
     const condition = {
       active: 1,
@@ -97,7 +98,7 @@ router.get("/getbill", async (req, res) => {
       status: true,
       data: billData.slice(startIndex, endIndex),
       current: page,
-      total: Math.ceil(billData.length / limit),
+      total: Math.ceil(billData.length / pageLimit),
       results: billData.length,
       startIndex: startIndex,
       endIndex: endIndex,
