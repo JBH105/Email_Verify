@@ -8,12 +8,11 @@ const User = mongoose.model(
       // require: true,
     },
     Cname: {
-      type: String
+      type: String,
     },
     PhoneNo: {
-      type: String
-    }
-    ,
+      type: String,
+    },
     Email: {
       type: String,
       // require: true,
@@ -25,7 +24,11 @@ const User = mongoose.model(
     },
     isVerifed: {
       type: Boolean,
-      default: false
+      default: false,
+    },
+    Role: {
+      type: String,
+      default: "tailor",
     },
   })
 );
