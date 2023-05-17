@@ -114,17 +114,18 @@ router.post("/verify/:id", async (req, res) => {
 });
 
 // User Login
-router.post("/login", async (req, res) => {
+router.post("/logins", async (req, res) => {
   const { Email, Password } = req.body;
   const user = await User.findOne({ Email });
+  console.log("🚀 ~ file: User.js ~ line 120 ~ router.post ~ user", user)
   if (user && (await bcrypt.compare(Password, user.Password))) {
     const token = jwt.sign({ userId: user._id }, config.ACCESS_TOKEN_SECRET, {
       expiresIn: config.jwtExpiration,
     });
-    user.token = token;
+    user._doc["token"]=token   
     res
       .status(200)
-      .json({ message: "Successful login", "Token": token, user });
+      .json({ message: "Successful login", "Token": user });
   } else {
     res.send("Invalid Credentials");
   }

@@ -1,3 +1,3 @@
 {
-    "mongoURI": "mongodb+srv://jaydeep:COwt7ZlgDQr5qh57@cluster0.p7sbc.mongodb.net/Email-Verify?retryWrites=true&w=majority"
+    "mongoURI": "mongodb+srv://jenishdhameliya20:sUoK0NLWKhjlpMs2@cluster0.c0t6ocv.mongodb.net/Billing?authSource=admin&replicaSet=atlas-f0uorc-shard-0&w=majority&readPreference=primary&appname=MongoDB%20Compass&retryWrites=true&ssl=true"
 }
